@@ -1,0 +1,51 @@
+{
+  "name": "biz-project",
+  "version": "0.5.0",
+  "private": true,
+  "type": "module",
+  "description": "Central project records and agent handoffs for local coding workflows.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node scripts/platform-web.mjs",
+    "build:web": "tsc -p web/tsconfig.json --noEmit && vite build --config web/vite.config.js",
+    "setup": "node scripts/setup-web.mjs",
+    "setup:terminal": "node scripts/setup.mjs",
+    "test": "node --test",
+    "test:ui": "node tests/setup-web-ui.mjs",
+    "test:platform-ui": "node tests/platform-ui.mjs",
+    "test:rules-ui": "node tests/rules-ui.mjs",
+    "check": "node --check scripts/lib/service-description.mjs && node --check scripts/lib/shared-platform.mjs && node --check scripts/lib/service-connection.mjs && node --check scripts/biz-project.mjs && node --check scripts/setup.mjs && node --check scripts/setup-web.mjs && node --check scripts/platform-web.mjs && node --check web/app.js && node --check web/platform.js && node --check web/markdown.js && node --check web/vendor/marked.umd.js && node --check scripts/lib/setup-web.mjs && node --check scripts/lib/platform-web.mjs && node --check scripts/lib/platform-records.mjs && node --check scripts/lib/setup.mjs && node --check scripts/lib/storage.mjs && node --check scripts/lib/projects.mjs && node --check scripts/lib/participation.mjs && node --check scripts/lib/features.mjs && node --check scripts/lib/history-files.mjs && node --check scripts/lib/records-history.mjs && node --check scripts/lib/history-watcher.mjs && node --check scripts/lib/process-lease.mjs && node --check scripts/lib/service-runtime.mjs && node --check scripts/lib/rules-library.mjs && node --check scripts/lib/rules-render.mjs && node --check scripts/lib/rules-apply.mjs && node --check scripts/lib/rules-web.mjs && node --check scripts/lib/rules-starter.mjs && node --check web/rules.js && node --check scripts/service-control.mjs && node --check scripts/lib/service-control.mjs && node --check scripts/check-privacy.mjs && node --check scripts/check-version.mjs",
+    "check:privacy": "node scripts/check-privacy.mjs",
+    "version:check": "node scripts/check-version.mjs"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4"
+  },
+  "license": "MIT",
+  "author": "wnagchi",
+  "homepage": "https://github.com/wnagchi/biz-project#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wnagchi/biz-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wnagchi/biz-project/issues"
+  },
+  "keywords": [
+    "agent",
+    "skill",
+    "project-management",
+    "local-first",
+    "codex",
+    "cursor",
+    "markdown"
+  ]
+}

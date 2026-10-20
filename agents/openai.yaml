@@ -1,0 +1,6 @@
+interface:
+  display_name: "Biz Project"
+  short_description: "Central project records, onboarding and agent handoffs"
+  default_prompt: "Use $biz-project to inspect this project, ask me to confirm a missing records center's path before initialization, and maintain its records."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Biz Project · 安装向导</title>
+  <link rel="icon" href="/icons.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" type="module"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><svg aria-hidden="true"><use href="/icons.svg#layers"></use></svg><span>Biz Project</span><span class="brand-divider"></span><span class="product-name">安装向导</span></div>
+    <div class="header-actions"><button id="back-platform" class="secondary" disabled><svg aria-hidden="true"><use href="/icons.svg#arrow-left"></use></svg><span>项目管理</span></button><span class="local-state"><span></span>本机服务</span><button id="exit" class="icon-button" title="停止向导服务" aria-label="停止向导服务"><svg aria-hidden="true"><use href="/icons.svg#power"></use></svg></button></div>
+  </header>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="nav-label">项目接入</p>
+      <nav id="steps" aria-label="安装步骤"></nav>
+      <div class="sidebar-bottom"><svg aria-hidden="true"><use href="/icons.svg#shield-check"></use></svg><span>本地记录 · 独立存放</span></div>
+    </aside>
+    <main id="main">
+      <div id="global-error" class="notice error" role="alert" hidden></div>
+      <div id="content" aria-live="polite"><p class="loading">正在读取本机配置…</p></div>
+      <footer id="navigation"></footer>
+    </main>
+  </div>
+  <dialog id="directory-dialog" aria-labelledby="directory-title">
+    <div class="dialog-heading"><h2 id="directory-title">选择目录</h2><button id="close-directory" class="icon-button" aria-label="关闭目录选择" title="关闭"><svg aria-hidden="true"><use href="/icons.svg#x"></use></svg></button></div>
+    <div id="directory-roots" class="directory-roots"></div>
+    <form id="directory-form" class="directory-address"><button type="button" id="directory-up" class="icon-button" title="上一级" aria-label="上一级"><svg aria-hidden="true"><use href="/icons.svg#arrow-up"></use></svg></button><input id="directory-path" aria-label="目录路径" autocomplete="off"><button class="icon-button" title="前往目录" aria-label="前往目录"><svg aria-hidden="true"><use href="/icons.svg#arrow-right"></use></svg></button></form>
+    <div class="directory-toolbar"><input id="directory-search" type="search" placeholder="筛选目录" aria-label="筛选目录"><label><input id="directory-hidden" type="checkbox">显示隐藏目录</label></div>
+    <p id="directory-error" class="notice error" role="alert" hidden></p>
+    <div id="directory-list" class="directory-list"></div>
+    <div id="directory-new" class="new-directory" hidden><label for="new-directory-name">新目录名称</label><input id="new-directory-name" placeholder="输入文件夹名称" autocomplete="off"><p class="muted">安装确认后才会创建</p></div>
+    <div class="dialog-footer"><button id="new-directory-toggle" class="secondary" hidden><svg aria-hidden="true"><use href="/icons.svg#folder-plus"></use></svg>新目录</button><span id="directory-selection"></span><button id="select-directory" class="primary">选择此目录</button></div>
+  </dialog>
+</body>
+</html>

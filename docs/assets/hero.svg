@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="320" viewBox="0 0 1120 320" role="img" aria-labelledby="title desc">
+  <title id="title">Biz Project</title>
+  <desc id="desc">Local project records for continuous agent workflows: projects, features, progress and history.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#101c31"/><stop offset="1" stop-color="#17182f"/></linearGradient>
+    <linearGradient id="accent"><stop stop-color="#67e8c5"/><stop offset="1" stop-color="#8abaff"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#fff" stroke-opacity=".035"/></pattern>
+  </defs>
+  <rect width="1120" height="320" rx="20" fill="url(#bg)"/>
+  <rect width="1120" height="320" rx="20" fill="url(#grid)"/>
+  <circle cx="1070" cy="-20" r="240" fill="#70a4ff" opacity=".04"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <rect x="52" y="45" width="172" height="28" rx="14" fill="#67e8c5" opacity=".12"/>
+    <text x="68" y="64" fill="#8aead0" font-size="11" font-weight="600" letter-spacing="2">LOCAL FIRST · OPEN</text>
+    <text x="50" y="145" fill="#f3f7ff" font-size="58" font-weight="700" letter-spacing="-2">Biz Project</text>
+    <text x="53" y="188" fill="#a7b5cc" font-size="21">From context to continuity.</text>
+    <path d="M54 219H450" stroke="url(#accent)" stroke-width="2"/>
+    <text x="53" y="256" fill="#8294af" font-size="13" letter-spacing="1">PROJECTS / FEATURES / PROGRESS / HISTORY</text>
+    <rect x="604" y="54" width="462" height="212" rx="14" fill="#0c1425" stroke="#35415a"/>
+    <circle cx="627" cy="77" r="4" fill="#67e8c5"/><circle cx="643" cy="77" r="4" fill="#8abaff"/><circle cx="659" cy="77" r="4" fill="#a59cff"/>
+    <path d="M604 98H1066" stroke="#29364c"/>
+    <rect x="620" y="115" width="99" height="132" rx="7" fill="#152138"/>
+    <rect x="732" y="115" width="115" height="132" rx="7" fill="#152138"/>
+    <rect x="860" y="115" width="189" height="132" rx="7" fill="#152138"/>
+    <text x="632" y="139" fill="#8aead0" font-size="10" letter-spacing="1">PROJECTS</text>
+    <text x="744" y="139" fill="#9fc4ff" font-size="10" letter-spacing="1">FEATURES</text>
+    <text x="873" y="139" fill="#c2b8ff" font-size="10" letter-spacing="1">RECORDS</text>
+    <rect x="630" y="155" width="79" height="24" rx="5" fill="#67e8c5" opacity=".16"/>
+    <g stroke="#425373" stroke-width="4" stroke-linecap="round"><path d="M636 191H699M636 210H687M744 191H833M744 210H812M875 177H1030M875 194H1010M875 211H1021"/></g>
+    <circle cx="746" cy="166" r="4" fill="#67e8c5"/><path d="M758 166H828" stroke="#8abaff" stroke-width="4" stroke-linecap="round"/>
+    <rect x="873" y="153" width="93" height="7" rx="3" fill="url(#accent)"/>
+    <text x="876" y="235" fill="#8094b3" font-size="10">Markdown + JSON · Yours to keep</text>
+  </g>
+</svg>
