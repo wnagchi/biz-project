@@ -92,7 +92,8 @@ test('directory deletion captures all removed document tombstones', async t => {
   const f = fixture(t), w = watch(t, f.root); await w.ready;
   fs.rmSync(path.join(f.root, 'projects/one/features/first'), { recursive: true });
   const s = history.createSnapshotStore(f.root);
-  await until(async () => (await s.versions('projects/one/features/first/README.md'))[0]?.deleted === true);
+  await until(async () => (await s.versions('projects/one/features/first/README.md'))[0]?.deleted === true
+    && (await s.versions('projects/one/features/first/feature.json'))[0]?.deleted === true);
   assert.equal((await s.versions('projects/one/features/first/feature.json'))[0].deleted, true);
 });
 test('invalid JSON is not snapshotted and a later valid edit recovers', async t => {

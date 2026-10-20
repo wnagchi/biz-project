@@ -40,16 +40,22 @@
    界面源码或构建配置变化时再执行 `npm ci`、`npm run build:web` 和相关浏览器验收，提交需分发的 `web/platform.js`。
 
 4. 暂存审阅后的文件，检查差异，再运行 `npm run check:privacy -- --staged`。不要用强制添加绕过私人文件规则。
-5. 创建版本提交与注释标签。以下以 `0.5.1` 为示例，替换为实际待发布版本：
+5. 创建版本提交并推送主分支，先让 GitHub CI 验证这份提交。以下以 `0.5.1` 为示例，替换为实际待发布版本：
 
    ```sh
    npm run version:check -- --tag v0.5.1
    git commit -m "release: v0.5.1"
-   git tag -a v0.5.1 -m "Biz Project v0.5.1"
-   git push --atomic origin main v0.5.1
+   git push origin main
    ```
 
-6. 核对远端分支与标签指向、查看 CI 结果，再记录发布证据。GitHub Release 如需单独创建，正文取自对应版本说明，并核对其目标标签。
+6. 等待该提交的 CI 通过，核对本地 HEAD 仍是已验证的提交，再创建和推送注释标签：
+
+   ```sh
+   git tag -a v0.5.1 -m "Biz Project v0.5.1"
+   git push origin v0.5.1
+   ```
+
+   核对远端分支、标签目标和 CI 的提交一致，再记录发布证据。若本地或远端已有新提交，先核对目标，不给未验证的提交打版本标签。GitHub Release 如需单独创建，正文取自对应版本说明，并核对其目标标签。
 
 ## 自动检查
 

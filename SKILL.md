@@ -134,6 +134,8 @@ independent; a later explicit Biz/Agent stop cancels companion resume.
    Registered projects need no repeated enrollment question; missing host hooks
    can be repaired under the existing initialization rules. Preferences are shared
    across local hosts using the same config profile; see [initialization](references/initialization.md#project-participation).
+   Windows refusal comparisons recognize existing short/long path aliases without
+   rewriting persisted identities. A Git initialization cannot clear a refusal.
 3. Read existing project and applicable global guidance. Inspection lists Codex
    global files only for Codex; read Cursor User Rules from its active context.
    If inspection reports `records_root_confirmation_required`, ask the user to

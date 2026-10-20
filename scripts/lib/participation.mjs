@@ -4,7 +4,15 @@ import { createHash } from 'node:crypto';
 import { atomicWrite, canonical, fail, isInside, jsonText, readJson, sourceDirectory, withLock } from './storage.mjs';
 
 export const preferencesPath = configFile => canonical(path.join(path.dirname(configFile), 'project-preferences.json'));
-const pathKey = value => process.platform === 'win32' ? value.toLowerCase() : value;
+const pathKey = value => {
+  if (process.platform !== 'win32') return value;
+  // Git expands Windows 8.3 aliases while the JS realpath implementation may not.
+  // Compare native aliases without rewriting persisted identities or missing paths.
+  let resolved = value;
+  try { resolved = fs.realpathSync.native(value); }
+  catch (error) { if (!['ENOENT', 'ENOTDIR'].includes(error.code)) throw error; }
+  return resolved.toLowerCase();
+};
 
 function load(filename) {
   if (!fs.existsSync(filename)) return { kind: 'biz-project-preferences', schema_version: 1, projects: {} };

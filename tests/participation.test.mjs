@@ -5,6 +5,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { beforeEach, afterEach, test } from 'node:test';
+import { participation, saveParticipation } from '../scripts/lib/participation.mjs';
 
 const source = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 let sandbox, project, home, records, config, preferences, env;
@@ -90,6 +91,20 @@ test('refusal survives a non-Git project later becoming a Git repository', () =>
   decide('no'); const git = spawnSync('git', ['init', project], { encoding: 'utf8' }); assert.equal(git.status, 0, git.stderr);
   assert.equal(ok(run('inspect')).skip_recording, true);
   decide('yes'); assert.equal(ok(run('init', '--records-root', records)).initialized, true);
+});
+
+test('Windows refusal matches short and long aliases after project identity changes', { skip: process.platform !== 'win32' }, t => {
+  const longPath = fs.realpathSync.native(process.env.ProgramFiles);
+  const result = spawnSync('cmd.exe', ['/d', '/s', '/c', `for %I in ("${longPath}") do @echo %~sI`],
+    { encoding: 'utf8', windowsVerbatimArguments: true });
+  assert.equal(result.status, 0, result.stderr);
+  const shortPath = result.stdout.trim();
+  assert.ok(fs.existsSync(shortPath));
+  if (shortPath.toLowerCase() === longPath.toLowerCase()) { t.skip('This Windows volume has no 8.3 alias'); return; }
+  // Read the existing aliases only; all preference writes stay in the temporary fixture.
+  saveParticipation({ root: shortPath, identity: 'directory:short-alias-fixture' }, config, 'no');
+  const state = participation({ root: longPath, identity: 'git:long-alias-fixture' }, config);
+  assert.equal(state.status, 'declined');
 });
 
 test('Git worktrees share the same refusal and explicit restoration', () => {

@@ -9,6 +9,9 @@ Run read-only inspect first. `skip_recording=true` means the user declined:
 do not ask again, initialize, add hooks, create feature records or submit updates.
 Continue the actual development task without this recording workflow. The helper
 checks refusal before center/guidance discovery, including generic host selection.
+On Windows, refusal path comparisons resolve existing 8.3/long aliases before
+case folding, so creating Git metadata does not bypass a saved decision. Stored
+identities and paths are not rewritten merely to compare aliases.
 It cannot stop a host from initially loading the skill; it prevents further
 recording actions. Never disable the skill globally to exclude one project.
 

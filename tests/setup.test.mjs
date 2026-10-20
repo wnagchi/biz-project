@@ -376,7 +376,8 @@ test('setup registers a new worktree path even when its rule is copied from the 
   const registry = JSON.parse(fs.readFileSync(path.join(records, 'registry.json')));
   assert.equal(Object.keys(registry.projects).length, 1);
   assert.equal(second.items[0].project_id, first.items[0].project_id);
-  assert.ok(registry.projects[first.items[0].project_id].paths.includes(linked));
+  assert.ok(registry.projects[first.items[0].project_id].paths.some(saved =>
+    fs.realpathSync.native(saved) === fs.realpathSync.native(linked)));
 });
 
 test('a missing center passed as a candidate still requires directory selection', () => {

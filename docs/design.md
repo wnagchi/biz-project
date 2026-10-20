@@ -40,6 +40,11 @@ it. Decisions share canonical Git identity and paths across tools on the same
 config profile. Independent clones/moves/machines/profiles are not inferred.
 Center discovery used by management is independent from source-project enrollment.
 
+Windows refusal matching resolves existing short/long aliases through native
+realpath before case folding. This preserves the decision when Git reports a
+different spelling of the same directory; comparison does not migrate stored
+identities or rewrite existing preference paths.
+
 Run a read-only inspection before making changes. Resolve the records root from
 an explicit argument, BIZ_PROJECT_HOME, the user configuration, or existing
 recognized directories. Multiple discovered centers require a deliberate
