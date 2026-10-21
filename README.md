@@ -38,9 +38,9 @@ Biz Project 把这些信息落到一个你指定的本地记录中心：**项目
 flowchart TB
     A["项目 A<br/>Codex / Cursor<br/>项目规则入口"]
     B["项目 B<br/>Codex / Cursor<br/>项目规则入口"]
-    S["biz-project Skill<br/>Agent 读取约定<br/>开发 · 验证 · 记录"]
-    R["统一记录中心<br/>Markdown + JSON<br/>按项目与功能存档"]
-    W["本地工作台<br/>浏览 · 编辑 · 历史"]
+    S["biz-project Skill<br/>读取项目约定<br/>开发与验证<br/>写回结果"]
+    R["统一记录中心<br/>项目 / 功能<br/>约定 / 进展"]
+    W["本地工作台<br/>浏览与编辑<br/>查看历史"]
     A --> S
     B --> S
     S <-->|定位项目与功能| R
