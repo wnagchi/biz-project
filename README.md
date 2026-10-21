@@ -188,6 +188,10 @@ English and Chinese are available for this README and the workflow guide. Other 
 
 Share use cases and reproducible issues through [GitHub Issues](https://github.com/wnagchi/biz-project/issues), or contribute a focused improvement. The contribution guide covers frontend setup, verification commands, and screenshot requirements.
 
+## Community links
+
+[LinuxDO](https://linux.do/)
+
 ---
 
 <div align="center">

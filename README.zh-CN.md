@@ -182,6 +182,10 @@ npm start
 
 欢迎通过 [Issue](https://github.com/wnagchi/biz-project/issues) 交流使用场景与可复现的问题，也欢迎提交聚焦的改进。前端开发环境、验证命令与截图要求见贡献指南。
 
+## 友情链接
+
+[LinuxDO（L站）](https://linux.do/)
+
 ---
 
 <div align="center">
