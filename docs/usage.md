@@ -41,7 +41,7 @@ node scripts/platform-web.mjs --tls-cert "D:\certs\server.pem" --tls-key "D:\cer
 
 异常保存优先恢复本次已写入的文件；发现别人已再次修改时不覆盖，保留隐藏 `.pending` journal 并阻止该记录继续写入。此时先停止写入操作，由本机负责人检查 journal 的 before/after 和文件现状，恢复一致后再处理日志；不自动删除其他 Agent 的锁或恢复证据。项目约定修改也保存审计历史，目前历史界面展示功能记录历史。
 
-开发验收运行 `npm run test:platform-ui`，外部测试依赖与下方安装器浏览器验收相同。当前工程仍未发布，不包含外部示例应用业务数据、团队账号、任务自动调度或云同步。
+开发验收运行 `npm run test:platform-ui`，外部测试依赖与下方安装器浏览器验收相同。已发布的源码版本见 [版本记录](../CHANGELOG.md)；不包含外部示例应用业务数据、团队账号、任务自动调度或云同步。
 
 ## 外部应用启动联动
 
