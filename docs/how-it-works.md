@@ -1,119 +1,121 @@
-# 工作原理：让不同工具接着同一份进度开发
+# How it works: shared progress across AI coding tools
 
-[返回首页](../README.md) · [安装与使用](usage.md) · [协作契约](../references/collaboration.md)
+**English** · [简体中文](how-it-works.zh-CN.md)
 
-Biz Project 面向一种常见工作方式：一个人同时维护多个项目，也会使用不同的 Agent 工具或多个对话推进开发。它用共享的本地文件保存项目约定与开发进展，让后续工作有据可查；规则库则帮助不同项目复用并定制开发规范。
+[Home](../README.md) · [User guide (中文)](usage.md) · [Collaboration contract](../references/collaboration.md)
 
-## 1. Skill 如何运行
+Biz Project supports a common way of working: one person maintains several projects and uses different AI coding tools or conversations to develop them. Shared local files preserve project agreements and progress so later work has a traceable starting point. The rules library helps projects reuse and customize their development standards.
 
-Skill 包含给 Agent 阅读的 [`SKILL.md`](../SKILL.md)、相关规范、记录模板和 Node.js helper。安装后，支持的工具可以发现它；在 Codex 中通过 `$biz-project` 调用，在 Cursor 中通过 `/biz-project` 调用。
+## 1. How the skill runs
 
-实际执行者是当前 Agent。它读取 Skill 指令，再按当前任务使用命令行工具与文件工具完成以下步骤：
+The skill includes [`SKILL.md`](../SKILL.md) for the agent to read, supporting references, record templates, and a Node.js helper. After installation, supported tools can discover it. Invoke it with `$biz-project` in Codex or `/biz-project` in Cursor.
 
-1. **检查当前项目**：调用 `scripts/biz-project.mjs ensure-service`，传入当前项目目录和真实宿主 `--host codex` 或 `--host cursor`。明确只读的任务使用 `inspect`。
-2. **定位已有上下文**：读取登记信息、项目档案和相关功能记录；继续同一工作时复用功能 ID，避免每次对话创建一份新记录。
-3. **执行开发工作**：先记录范围与关键决定，再按项目自身的规则修改代码、运行验证，并核对当前分支与实际结果。
-4. **保存与交接**：将变化、验证证据、未解决问题和下一步写回功能记录；需要独立进展时使用 `add-update`。
+The current agent performs the work. It reads the skill instructions, then uses its command-line and file tools to follow these steps:
 
-`ensure-service` 同时检查共享服务状态；只有已接入项目且允许自动启动时才会启动服务，也会尊重明确停止的选择。记录与开发流程仍由 Agent 执行，后台服务主要提供工作台与记录文档快照。
+1. **Inspect the current project.** Run the skill's `scripts/biz-project.mjs ensure-service` helper with the project directory and the actual host, `--host codex` or `--host cursor`. Explicitly read-only tasks use `inspect`.
+2. **Locate existing context.** Read the registration, project profile, and relevant feature record. Reuse the feature ID when continuing the same work, rather than creating a new record for every conversation.
+3. **Develop and verify.** Record scope and key decisions first. Follow the project's own rules to change code, run verification, and check the current branch and actual results.
+4. **Save and hand off.** Write changes, verification evidence, unresolved issues, and next steps back to the feature. Use `add-update` for individual progress updates.
 
-通过向导首次接入时，需要确认项目参与、外部记录中心及安装预览。日常开发复用既有登记，不会因为切换工具重新创建中心。具体命令见[使用手册](usage.md#多工具接入)。
+`ensure-service` also checks the shared service. It starts the service only for an enrolled project with approved automatic startup, and respects explicit stops. The agent still performs development and recording; the background service primarily provides the workspace and document snapshots.
 
-## 2. AGENTS.md 与 Skill 如何配合
+First-time wizard setup requires confirmation of project participation, the external records center, and the installation preview. Daily work reuses the registration, so switching tools does not create another center. See the [multi-tool instructions (中文)](usage.md#多工具接入) for commands.
 
-`AGENTS.md` 是 Agent 工具读取的项目规则文件。它提供进入这个项目时应遵守的约定；Skill 提供可复用的工作流程。两者配合后，Agent 能从“当前项目”找到“应该调用的流程”和“已有的记录”。
+## 2. How AGENTS.md and the skill work together
 
-| 工具 | 默认接入位置 | 调用方式 |
+`AGENTS.md` is a project rule file read by agent tools. It describes the agreements to follow in that project; the skill supplies a reusable workflow. Together, they let the agent connect the current project to the right process and its existing records.
+
+| Tool | Default project entry | Invocation |
 | --- | --- | --- |
-| Codex | 优先更新已有 `AGENTS.override.md`，否则使用 `AGENTS.md` | `$biz-project` |
-| Cursor | `.cursor/rules/biz-project.mdc`，设置 `alwaysApply: true` | `/biz-project` |
-| 其他工具 | 用户显式指定、且该工具确实加载的规则文件 | 使用 `--host generic --rules-file …` 手动接入；不代表原生适配已验证 |
+| Codex | Update an existing `AGENTS.override.md` first; otherwise use `AGENTS.md` | `$biz-project` |
+| Cursor | `.cursor/rules/biz-project.mdc` with `alwaysApply: true` | `/biz-project` |
+| Other tools | A rule file explicitly selected by the user and actually loaded by that tool | Manual integration through `--host generic --rules-file …`; native adapter behavior has not been verified |
 
-安装器为选中的工具配置 Skill 入口，并在项目中加入受管理的调用区块。区块包含项目记录 ID，以及“开工前检查、读取现有记录、遵循本项目约定、完成后维护记录”等指令。项目登记本身只安装调用约定，不会单独安装 Skill。
+The installer configures skill access for the selected tools and adds a managed invocation block to the project. That block contains the project records ID and instructions to inspect before working, read existing context, follow project agreements, and maintain records afterward. Project registration alone installs invocation guidance; it does not separately install the skill.
 
-可以把调用区块概括为以下内容；这只是阅读示意，实际入口由安装器生成并保留已有规则：
+The block can be summarized as follows. This is a reading example; the installer generates the actual entry while preserving existing rules:
 
 ```text
-开发、修复、审阅或交接本项目时，使用 biz-project Skill。
-按当前工具选择 host，并定位已登记的项目记录 ID。
-先读项目约定与已有功能记录，再开展工作。
-将实际修改、验证证据和下一步写回原功能记录。
+Use the biz-project skill for development, fixes, reviews, and handoffs in this project.
+Select the actual tool's host and locate the registered project records ID.
+Read project agreements and existing feature records before working.
+Write actual changes, verification evidence, and next steps back to the same feature.
 ```
 
-**项目规则是入口，Skill 是流程，中心记录是上下文。** Agent 仍需正确加载并遵循这些指令；入口文件不会自己执行脚本、抓取对话或启动另一个 Agent。
+**Project rules provide the entry point, the skill provides the process, and central records provide the context.** The agent must load and follow these instructions. Entry files do not execute scripts, collect conversations, or start other agents on their own.
 
-## 3. 多项目如何共用中心，又保留各自约定
+## 3. One center, separate project agreements
 
-记录中心位于源码仓库之外，结构如下，尖括号表示实际 ID：
+The records center lives outside source repositories. Angle brackets below stand for actual IDs:
 
 ```text
-记录中心/
-├── registry.json                         项目登记与工具入口映射
+records-center/
+├── registry.json                         Project registration and tool entries
 └── projects/
-    ├── <项目 A 的 ID>/
-    │   ├── project.json                  分支、验证、发布与协作约定
-    │   ├── README.md                     项目说明与当前概况
+    ├── <project-a-id>/
+    │   ├── project.json                  Branch, verification, release, collaboration rules
+    │   ├── README.md                     Project overview and current context
     │   └── features/
-    │       └── <功能 ID>/
-    │           ├── feature.json          功能身份、负责人和状态
-    │           ├── README.md             范围、决策、进度和交接主记录
-    │           └── updates/*.json        各参与者的独立进展
-    └── <项目 B 的 ID>/                    另一套项目约定与功能记录
+    │       └── <feature-id>/
+    │           ├── feature.json          Identity, owner, and status
+    │           ├── README.md             Scope, decisions, progress, and handoffs
+    │           └── updates/*.json        Individual contributor updates
+    └── <project-b-id>/                    Separate agreements and feature records
 ```
 
-例如，商城前端与订单服务可以在同一工作台查看进度，但各自保留不同的验证命令和发布条件。Agent 切换到另一个项目时，先定位该项目 ID，读取对应档案和规则。
+For example, a storefront frontend and an order service can appear in one workspace while keeping different verification commands and release criteria. When the agent switches projects, it locates that project's ID and reads its profile and rules.
 
-同一本机 Git 仓库的关联 worktree 通过共享 Git 目录识别为同一项目；非 Git 项目使用解析后的目录身份。Codex 和 Cursor 的入口分别登记，项目和功能 ID 不变。独立克隆或另一台机器不会自动被识别为原登记，也没有自动跨机器同步。
+Linked worktrees of the same local Git repository are identified through their shared Git directory. Non-Git projects use their resolved directory identity. Codex and Cursor register separate entries while keeping the same project and feature IDs. An independent clone or another machine is not automatically matched to the original registration, and there is no automatic cross-machine synchronization.
 
-## 4. 多个 Agent 如何同步开发进度
+## 4. How multiple agents share progress
 
-### 先后接力：换工具，继续同一功能
+### Sequential handoffs: change tools, continue the feature
 
-| 时刻 | Agent 的动作 | 留给后续工作的依据 |
+| Stage | Agent action | Context left for the next task |
 | --- | --- | --- |
-| Codex 实现接口 | 读取登录功能原记录，完成接口并验证 | 接口约定、修改位置、测试结果、待联调事项 |
-| Cursor 接续页面 | 读取同一功能记录，核对代码，继续联调 | 页面接入结果、遇到的问题、新的验证证据 |
-| 下一次对话继续 | 重新读取最新记录，核对未完成项 | 明确从哪里接着做，哪些结论仍需验证 |
+| Codex implements an API | Read the login feature record, implement the API, and verify it | Interface decisions, changed code, test results, pending integration work |
+| Cursor continues the UI | Read the same feature, check the code, and continue integration | UI integration results, encountered issues, new verification evidence |
+| A later conversation resumes | Read the latest record again and check remaining work | A clear starting point and conclusions that still need verification |
 
-同一个聊天也需要重新读取最新记录。记录是持久化的交接依据，实际代码、测试和发布证据决定当前状态。
+Even an existing conversation needs to reread current records. Records provide a persistent handoff; actual code, tests, and release evidence determine the current state.
 
-### 同时推进：独立记录，集中汇总
+### Parallel work: separate updates, one consolidated record
 
-对于同一功能，先约定负责人及各参与者的范围、接口、分支或 worktree，然后按以下流程协作：
+For a shared feature, first agree on its owner and each contributor's scope, interfaces, branch or worktree. Then follow this workflow:
 
-1. 每个参与者读取当前功能记录，确认自己负责的部分。
-2. 各自通过 `add-update` 提交独立的进展文件，附作者标签、修改、验证结果和剩余问题，避免竞争追加同一份日志。
-3. 同一次提交重试使用相同的 checkpoint ID；结果变化时使用新 ID，并说明替代了哪个旧结论。
-4. 负责人读取各份进展，对照代码与验证结果，把已接受的结论汇入功能主记录，保留来源 ID。
-5. 负责人依据整个功能的实际证据调整状态，并明确未集成部分和下一步。
+1. Each contributor reads the current feature and confirms their assignment.
+2. Contributors submit separate files through `add-update`, including an author label, changes, verification results, and remaining issues. They do not compete to append to one log.
+3. Retry the same submission with the same checkpoint ID. Changed results use a new ID and explain which earlier conclusion they replace.
+4. The owner reads the updates, checks the code and verification results, and consolidates accepted conclusions into the master feature record, retaining source update IDs.
+5. The owner adjusts the overall status using evidence for the entire feature, and identifies work still awaiting integration and the next steps.
 
-独立进展提交不会自动推进整体状态。负责人是协作约定，不是账号权限控制；任意手工编辑主文档也不受 helper 的全局锁保护。平台对浏览器保存进行版本冲突检查，仍需避免多个参与者同时改写主记录。
+Submitting an individual update does not advance the overall status. Ownership is a collaboration agreement rather than account-based access control. The helper's lock does not protect arbitrary manual edits to the master document. Browser saves check revisions for conflicts, but contributors should still avoid editing the master record simultaneously.
 
-Biz Project 提供这套记录约定与文件机制。创建子 Agent、发送消息、合并代码和推送发布，仍按用户授权与该项目规则执行。分支集成记录应包含源/目标提交、验证结果与观察时间；填写“已上线”不会执行部署或核验发布。
+Biz Project provides the recording convention and file mechanisms. Spawning agents, messaging other conversations, merging code, and publishing still follow user authorization and project rules. Integration records should include source and target commits, verification results, and the observation time. Marking a feature as released does not deploy or verify a release.
 
-## 5. 不同项目如何制定与复用规则
+## 5. Define and reuse rules for different projects
 
-**开发规则库与记录中心独立。** 规则库保存可复用的模块和方案，项目档案及规则文件保存本项目实际采用的约定。
+**The development rules library is separate from the records center.** It stores reusable modules and schemes; project profiles and rule files hold the agreements actually adopted by each project.
 
-例如，你可以复用以下模块，再为每个项目填入不同参数：
+For example, reuse these agreements while supplying different project parameters:
 
-| 可复用约定 | 项目 A 可以配置 | 项目 B 可以配置 |
+| Reusable agreement | Project A might use | Project B might use |
 | --- | --- | --- |
-| 开发前读取项目上下文 | 前端目录、组件约定 | 服务目录、接口约定 |
-| 提交前运行验证 | 前端测试与构建命令 | 后端测试与接口验收命令 |
-| 分支集成与发布检查 | 按项目的分支与部署条件 | 按项目的分支与打包条件 |
-| Agent 交接保留证据 | 修改、验证与下一步 | 修改、验证与下一步 |
+| Read project context before development | Frontend directories and component conventions | Service directories and interface conventions |
+| Verify changes before committing | Frontend tests and build commands | Backend tests and API acceptance commands |
+| Check integration and releases | Its own branches and deployment conditions | Its own branches and packaging conditions |
+| Include evidence in agent handoffs | Changes, verification, and next steps | Changes, verification, and next steps |
 
-在工作台选择模块/方案、目标项目和工具，填写项目参数，再预览写入范围。Codex 默认写入已有 `AGENTS.override.md`，否则为 `AGENTS.md`；Cursor 的开发规范默认写入 `.cursor/rules/biz-project-development.mdc`，与记录调用入口分开。
+In the workspace, select modules or a scheme, a target project, and a tool. Fill in parameters and preview the write scope. Codex targets an existing `AGENTS.override.md`, otherwise `AGENTS.md`. Cursor's development rules go to `.cursor/rules/biz-project-development.mdc` by default, separate from its records invocation entry.
 
-已有规则需要保留时，可以导出合并任务，由当前 Agent 结合原规则审阅并形成草案，再回到平台确认应用。受保护的记录调用区块会保留；规则导入不会替你修改中心项目档案。若分支、验证或发布约定变化，应同步维护项目档案，避免两处冲突。
+To preserve existing rules, export a merge task for the current agent to review against the originals, then import its draft and approve application in the workspace. Protected records invocation blocks are retained. Importing rules does not modify the central project profile. When branch, verification, or release agreements change, update the profile too, so the two remain consistent.
 
-目标项目可以只使用规则库，不加入集中记录。模板更新也不会自动覆盖已经应用到项目的文件。完整流程见[开发规则模板](../references/rule-templates.md)。
+A target project can use the rules library without joining centralized records. Updating a template does not automatically overwrite files already applied to projects. See [development rule templates](../references/rule-templates.md) for the full process.
 
-## 6. 使用范围
+## 6. Scope
 
-进度同步依赖所有参与者使用同一中心、定位同一项目/功能，并按流程及时读写。当前面向本地 Codex / Cursor 工作流；入口生成与共享数据机制的验证，不能代替各 Agent 产品 UI 的独立行为验证。
+Shared progress depends on contributors using the same center, locating the same project and feature, and reading and writing records as they work. The current target is local Codex / Cursor workflows. Tests of entry generation and shared data mechanisms do not replace independent behavior checks in each agent product's UI.
 
-平台可以浏览、编辑和检索这些记录；共享服务在运行时保存文档快照。它不提供云端同步、团队账号、聊天上下文传输、模型 API 调用或自动 Agent 调度。私人局域网访问共用本机记录，也不会让另一台机器上的 Agent 自动接入。
+The workspace lets you browse, edit, and search records; the shared service captures document snapshots while running. There is no cloud sync, team account system, conversation transfer, model API integration, or automatic agent scheduling. Private LAN access shares local records but does not automatically connect agents on another machine.
 
-记录、指针配置和凭据应留在仓库外。开源源码与个人数据的边界见[隐私指南](privacy.md)，访问范围与安全设置见[安全说明](../SECURITY.md)。
+Keep live records, pointer configuration, and credentials outside the repository. See the [privacy guide (中文)](privacy.md) for the boundary between source and personal data, and [Security (中文)](../SECURITY.md) for network access and settings.

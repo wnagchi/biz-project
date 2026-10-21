@@ -20,6 +20,8 @@ Node 服务使用内置模块。React、TypeScript 与 Vite 用于前端开发�
 
 ## 修改与验证
 
+`README.md` 与 `docs/how-it-works.md` 为默认英文页面；对应中文版为 `README.zh-CN.md` 与 `docs/how-it-works.zh-CN.md`。修改这些文档时，请在同一变更中同步两种语言的能力说明、命令、图表与链接，保留双向语言入口。产品界面与其他文档的语言不因 README 翻译而改变。
+
 | 改动范围 | 验证要求 |
 | --- | --- |
 | 文档、模板、项目配置 | 检查链接、示例与隐私范围；修改 CI 时核对命令与权限 |

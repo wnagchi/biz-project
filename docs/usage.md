@@ -1,6 +1,6 @@
 # 使用手册
 
-本页保留平台、安装器、命令行和兼容行为的详细说明。首次使用请先阅读 [项目首页](../README.md)；了解 Skill、项目规则与多工具接续的关系，见 [工作原理](how-it-works.md)。
+本页保留平台、安装器、命令行和兼容行为的详细说明。首次使用请先阅读 [中文项目首页](../README.zh-CN.md)（[English](../README.md)）；了解 Skill、项目规则与多工具接续的关系，见 [中文工作原理](how-it-works.zh-CN.md)（[English](how-it-works.md)）。
 
 ## 本地项目管理平台
 

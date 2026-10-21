@@ -4,188 +4,196 @@
 
 # Biz Project
 
-### 多个项目，多种 Agent 工具，接着同一份进度继续开发。
+**English** · [简体中文](README.zh-CN.md)
 
-本地项目工作台 + Agent Skill + 开发规则库。<br />各项目保留自己的约定，Codex / Cursor 按同一套记录流程接续工作。
+### Many projects. Different AI tools. Shared progress.
+
+A local project workspace, an agent skill, and a development rules library.<br />Each project keeps its own rules. Codex and Cursor follow the same workflow for recording progress.
 
 [![Release](https://img.shields.io/github/v/release/wnagchi/biz-project?style=flat-square&label=release&color=087f6b)](https://github.com/wnagchi/biz-project/releases) [![CI](https://github.com/wnagchi/biz-project/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/wnagchi/biz-project/actions/workflows/ci.yml) [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520-087f6b?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![MIT](https://img.shields.io/badge/license-MIT-536b70?style=flat-square)](LICENSE)
 
-[为什么做](#为什么会有-biz-project) · [界面预览](#本地项目管理平台) · [工作原理](#skill-如何与项目规则配合) · [快速开始](#快速开始) · [更新记录](CHANGELOG.md)
+[Why Biz Project](#why-biz-project) · [Preview](#local-project-workspace) · [How it works](#how-the-skill-and-project-rules-work-together) · [Quick start](#quick-start) · [Changelog (中文)](CHANGELOG.md)
 
 </div>
 
-## 为什么会有 Biz Project
+## Why Biz Project
 
-这个项目起源于一个反复遇到的开发痛点：**同时推进多个项目，又在多个 Agent 工具之间切换时，进度和规则很容易散落在不同对话里。**
+Biz Project grew out of a recurring problem: **when you work on several projects across different AI coding tools, progress and project rules get scattered across conversations.**
 
-刚在 Codex 中完成的修改，换到 Cursor 后需要重新交代；几个 Agent 同时处理一个功能时，各自说“完成了”，却难以判断整体还差什么。项目越来越多，测试、分支、发布和协作约定也各有不同，靠复制提示词维护容易遗漏或过时。
+A change you just finished in Codex needs explaining again in Cursor. Several agents report that their parts are done, while the feature's overall progress remains unclear. As projects multiply, their testing, branching, release, and collaboration rules also diverge. Copying prompts between them makes those rules hard to maintain.
 
-Biz Project 把这些信息落到一个你指定的本地记录中心：**项目约定按项目保存，进展按功能接续，开发规则按需复用。** 你在工作台看全局，Agent 在开发前读取上下文、完成后写回结果，下一个工具便有可核对的起点。
+Biz Project saves this context in a local records center you choose: **agreements belong to projects, progress follows features, and development rules can be reused.** You review the whole picture in the workspace. Agents read the context before working and write back their results, giving the next tool a starting point it can check against the code.
 
-## 本地项目管理平台
+<!-- Preserve the platform anchor referenced by existing Skill instructions. -->
+<a id="本地项目管理平台"></a>
 
-一个项目从哪里开始、某个功能为什么这样做、上次验证到了哪一步——把这些信息留在可继续维护的记录里，下次开发便有了起点。
+## Local project workspace
 
-<a href="docs/assets/workbench.png"><img src="docs/assets/workbench.png" alt="Biz Project 真实工作台：左侧项目、中间功能状态分组、右侧功能记录" width="100%" /></a>
+Keep a project's starting point, design decisions, and latest verification results in records you can maintain and revisit on the next task.
 
-<p align="center"><sub>真实工作台 · 项目 → 功能 → 记录三栏联动 · 截图中的项目与内容均为演示数据</sub></p>
+<a href="docs/assets/workbench.png"><img src="docs/assets/workbench.png" alt="The Biz Project workspace: projects on the left, features grouped by status in the middle, and a feature record on the right" width="100%" /></a>
 
-## Skill 如何与项目规则配合
+<p align="center"><sub>Actual workspace · Project → Feature → Record · Screenshots show the Chinese interface with fictional demo data</sub></p>
 
-**项目规则告诉 Agent“何时调用”，Skill 告诉 Agent“怎样记录”，记录中心保存“这个项目实际进行到了哪里”。**
+## How the skill and project rules work together
+
+**Project rules tell the agent when to use the skill. The skill explains the recording workflow. The records center keeps the project's actual progress.**
 
 ```mermaid
 flowchart TB
-    A["项目 A<br/>Codex / Cursor<br/>项目规则入口"]
-    B["项目 B<br/>Codex / Cursor<br/>项目规则入口"]
-    S["biz-project Skill<br/>读取项目约定<br/>开发与验证<br/>写回结果"]
-    R["统一记录中心<br/>项目 / 功能<br/>约定 / 进展"]
-    W["本地工作台<br/>浏览与编辑<br/>查看历史"]
+    A["Project A<br/>Codex / Cursor<br/>Project rules"]
+    B["Project B<br/>Codex / Cursor<br/>Project rules"]
+    S["biz-project Skill<br/>Read context<br/>Build and test<br/>Save results"]
+    R["Shared records<br/>Project / feature<br/>Rules / progress"]
+    W["Local workspace<br/>Browse and edit<br/>View history"]
     A --> S
     B --> S
-    S <-->|定位项目与功能| R
-    W <-->|浏览与维护| R
+    S <-->|Read / write| R
+    W <-->|Browse / edit| R
 ```
 
-| 组成 | 具体做什么 |
+| Part | What it does |
 | --- | --- |
-| **项目规则入口** | Codex 通过 `AGENTS.md` 或已有的 `AGENTS.override.md` 加载调用约定；Cursor 默认使用 `.cursor/rules/biz-project.mdc`。入口关联项目 ID，提醒 Agent 开工前读取记录。 |
-| **Agent Skill** | Agent 读取 `SKILL.md`，按流程调用随附的 Node.js helper，定位项目、复用功能记录、保存独立进展，并维护验证和交接信息。 |
-| **统一记录中心** | 按项目与功能分开保存约定、决策、结果和下一步。换工具或新建对话时，继续读取同一份记录。 |
-| **开发规则库** | 将通用约定做成模块和方案，按各项目的技术栈、验证命令、分支和发布要求定制，预览后应用到对应工具的规则文件。 |
+| **Project rules** | Codex loads the invocation instructions from `AGENTS.md` or an existing `AGENTS.override.md`. Cursor uses `.cursor/rules/biz-project.mdc` by default. The entry identifies the project and tells the agent to read its records before working. |
+| **Agent skill** | The agent reads `SKILL.md`, follows its workflow, and uses the bundled Node.js helper to locate projects, reuse feature records, and save individual updates, verification evidence, and handoff notes. |
+| **Records center** | Stores agreements, decisions, results, and next steps by project and feature. A new tool or conversation reads the same records. |
+| **Development rules library** | Packages reusable agreements into modules and schemes. Customize them for each project's stack, verification commands, branches, and release requirements, then preview and apply them to the target tool's rule files. |
 
-一次开发形成一个闭环：
+Each task follows the same cycle:
 
-1. **开工先读**：Agent 加载项目规则，调用 Skill，读取该项目约定与已有功能记录。
-2. **围绕同一功能推进**：核对代码与待办，记录关键决定，完成修改和实际验证。
-3. **结束写回**：保存修改、验证结果、未解决事项和下一步；并行参与者各写独立进展，由负责人核对汇总。
-4. **下次接着做**：换项目读取另一套约定；换工具继续同一项目时，沿用原项目 ID 和功能 ID。
+1. **Read before working.** Load the project rules, invoke the skill, and read the project's agreements and existing feature record.
+2. **Continue the same feature.** Check the code and pending work, record key decisions, make changes, and run the required verification.
+3. **Write back the outcome.** Save changes, verification results, unresolved issues, and next steps. Parallel contributors submit separate updates for the owner to review and consolidate.
+4. **Pick up next time.** Switching projects loads that project's agreements. Switching tools within a project keeps the same project and feature IDs.
 
-这里的“同步”依靠 **Agent 按约定读写共享记录**。Skill 是由当前 Agent 阅读并执行的指令与脚本集合；`AGENTS.md` 等入口本身不会启动后台任务，也不会传输聊天。独立机器或独立克隆的记录与代码不会自动同步。
+Progress stays in sync through **agents following the workflow and reading and writing shared records**. The skill is a set of instructions and scripts executed by the current agent. Files such as `AGENTS.md` do not run background jobs or transfer conversations. Independent machines or clones do not automatically synchronize their records or code.
 
-→ [深入了解：从规则入口到多 Agent 交接的完整过程](docs/how-it-works.md)
+→ [Read the full explanation: from project rules to agent handoffs](docs/how-it-works.md)
 
-## 把开发里的三件事接起来
+## Three connected workflows
 
-### 01 · 多个项目，也能看清下一步
+### 01 · See the next step across projects
 
-在工作总览中切换项目，按状态或时间整理功能，直接阅读当前记录。需求范围、关键决定、验证结果和待办有各自的位置，受阻项与正在推进的工作可以一起查看。
+Switch projects in the overview, group features by status or time, and read their current records. Scope, decisions, verification results, and pending work stay together, making it easier to review both active work and blockers.
 
-- **看进度**：项目与功能筛选、状态/时间分组、跨项目全文搜索。
-- **维护记录**：项目约定、功能正文、独立进展和修改历史，支持 Markdown 阅读与源码/预览编辑。
-- **找历史**：共享服务保存记录文档快照，可浏览过往内容、暂停监听和重新核对。
+- **Track progress:** project and feature filters, status/time groups, and full-text search across projects.
+- **Maintain records:** project agreements, feature documents, individual updates, and edit history, with Markdown reading and source/preview editing.
+- **Review history:** the shared service captures record snapshots while running; browse earlier content, pause watching, and rescan.
 
-### 02 · 从 Codex 到 Cursor，也能沿着同一个功能继续
+### 02 · Continue a feature from Codex to Cursor
 
-例如，你先在 Codex 中实现登录接口，随后让 Cursor 继续页面联调。前一次记录保留接口决定、验证结果和未完成项；后一个 Agent 读取同一功能，再对照当前代码接续，减少重新交代背景。
+For example, implement a login API in Codex, then continue the UI integration in Cursor. The earlier record keeps interface decisions, verification results, and pending work. The next agent reads that same feature and checks it against the current code, reducing the background you need to repeat.
 
 ```text
-用 biz-project 继续这个项目的登录功能。
-先读取项目约定和已有功能记录，核对当前代码，再处理尚未完成的联调。
-本次完成后，把实际修改、验证结果和下一步写回同一个功能记录。
+Use biz-project to continue this project's login feature.
+Read the project agreements and existing feature record, check the current code,
+and continue the remaining integration work.
+Write the actual changes, verification results, and next steps back to that feature.
 ```
 
-多个 Agent 并行时，每个参与者提交独立进展，避免同时改写同一份总结。功能负责人核对代码和验证证据后更新主记录；某个参与者完成一部分，不会自动把整个功能标记为已集成或已上线。
+When agents work in parallel, each contributor submits a separate update. The feature owner checks the code and evidence before updating the master record. Completing one assignment does not automatically mark the entire feature as integrated or released.
 
 <details>
-<summary><strong>查看独立进展示例</strong></summary>
+<summary><strong>View individual progress updates</strong></summary>
 <br />
-<img src="docs/assets/progress.png" alt="同一功能下以 Cursor 和 Codex 为作者标签保存的独立进展，内容为演示数据" width="770" />
+<img src="docs/assets/progress.png" alt="Separate demo progress updates for one feature, with Cursor and Codex as author labels" width="770" />
 
-不同作者的进展分别保存，由负责人核对后汇总。作者标签用于记录来源，不是团队账号或自动调度功能。
+Updates from different authors are saved separately and consolidated after review. Author labels identify the source of a record; they are not team accounts or an agent scheduler.
 
 </details>
 
-### 03 · 把开发约定，变成下一项目可复用的规则
+### 03 · Reuse development rules across projects
 
-在独立的开发规则库中维护模块和完整方案，覆盖生命周期、开发、验证、发布与 Agent 协作。规则正文使用 Markdown，可设置项目参数，按项目组合后再预览应用。
+Maintain modules and complete schemes in a separate rules library, covering lifecycle, development, verification, releases, and agent collaboration. Rules use Markdown and can expose project parameters. Compose them for a project, then preview the result before applying it.
 
-例如，前端项目与后端项目可以复用“提交前验证”和“交接需附证据”的约定，同时保留各自的测试命令、分支与上线条件。规则模板负责复用，项目规则文件与项目档案负责落实本项目的具体约定。
+For example, frontend and backend projects can share requirements to verify changes before a commit and include evidence in handoffs, while keeping different test commands, branches, and release criteria. Templates support reuse; project rule files and profiles hold the agreements adopted by each project.
 
-- **复用约定**：编辑、复制、归档和恢复模块/方案。
-- **先看差异**：选择目标项目和工具，确认参数与写入范围后再批准。
-- **保留已有规则**：导出合并任务交给当前 Agent 审阅，导入草案后再次核对和确认。
+- **Reuse agreements:** edit, copy, archive, and restore modules and schemes.
+- **Review before applying:** select the project and tool, confirm parameters, and preview the write scope before approval.
+- **Preserve existing rules:** export a merge task for the current agent to review, then import and approve the proposed draft.
 
-规则库可以独立使用，目标项目无需先加入集中记录。已经应用到项目的规则独立保存，修改模板不会自动覆盖项目。
+The rules library also works independently of centralized records. Applied project rules remain separate files; changing a template does not automatically overwrite them.
 
 <details>
-<summary><strong>查看规则模块编辑界面</strong></summary>
+<summary><strong>View the rule module editor</strong></summary>
 <br />
-<img src="docs/assets/rules-module.png" alt="真实规则模块编辑窗口：Markdown 开发约定、规则领域及开发分支参数，内容为演示数据" width="620" />
+<img src="docs/assets/rules-module.png" alt="The actual rule module editor showing Markdown development agreements, rule domains, and project parameters with demo data" width="620" />
 
 </details>
 
-## 快速开始
+## Quick start
 
-运行需要 **Node.js 20+**，已包含预编译网页资源，**无需先运行 `npm install`**。
+Requires **Node.js 20+**. Prebuilt web assets are included, so **you do not need to run `npm install` first**.
 
-### 1. 获取源码
+### 1. Get the source
 
-[下载 ZIP](https://github.com/wnagchi/biz-project/archive/refs/heads/main.zip) 并解压，或使用 Git：
+[Download and extract the ZIP](https://github.com/wnagchi/biz-project/archive/refs/heads/main.zip), or clone the repository:
 
 ```sh
 git clone https://github.com/wnagchi/biz-project.git
 cd biz-project
 ```
 
-### 2. 一次接入，后续复用
+### 2. Set up once, reuse later
 
-Windows 双击 **`install.cmd`**；其他终端在工程目录运行：
+On Windows, double-click **`install.cmd`**. From a terminal, run this in the repository directory:
 
 ```sh
 npm run setup
 ```
 
-在浏览器中按 **选择外部记录中心 → 选择项目与 Codex / Cursor → 审阅预览 → 确认安装** 完成接入。已有记录和项目规则会保留，旧文档不会自动迁移。Skill 入口链接到此源码目录，接入后请保留该目录的位置。
+In the browser, **choose an external records center → select projects and Codex / Cursor → review the preview → approve installation**. Existing records and project rules are preserved; older documents are not automatically migrated. The installed skill links to this source directory, so keep it in place after setup.
 
-### 3. 打开工作台，开始开发
+### 3. Open the workspace and start developing
 
-向导中点击 **「打开项目管理」**，或 Windows 双击 **`start.cmd`**。之后可直接启动平台；终端用户在另一个终端进入工程目录运行：
+In the wizard, click **「打开项目管理」 (Open project management)**, or double-click **`start.cmd`** on Windows. For later use, start the workspace directly. Terminal users can open another terminal in the repository directory and run:
 
 ```sh
 npm start
 ```
 
-在 Codex 中使用 `$biz-project`，在 Cursor 中选择 `/biz-project`。平台负责浏览和维护记录，Skill 为 Agent 提供读取、记录与交接的工作约定。
+Use `$biz-project` in Codex or `/biz-project` in Cursor. The workspace lets you browse and maintain records; the skill guides agents through reading, recording, and handing off work.
 
-> **访问范围**：`npm start` / `start.cmd` 默认接受私人 IPv4 局域网，同网段设备可直接查看和编辑记录，无访问码。仅需本机访问时运行 `npm start -- --no-lan`；复用已有服务时请核对本机设置。安装向导与 Agent 联动启动仅监听本机。详见 [安全说明](SECURITY.md)。
+> **Network access:** `npm start` / `start.cmd` accepts private IPv4 LAN connections by default. Devices on the same subnet can view and edit records without an access code. For local-only access, run `npm start -- --no-lan`; check local settings when reusing an existing service. The setup wizard and agent-triggered startup listen on loopback only. See [Security (中文)](SECURITY.md).
 
-## 数据留在你选择的位置
+## Your data stays where you choose
 
-项目记录以 **Markdown + JSON** 保存，记录中心、规则库和源码分开存放。你可以直接查看与备份原文件，也可以从网页编辑；修改冲突会被检查，文档快照由共享服务在运行时维护。
+Project records use **Markdown + JSON**, with the records center, rules library, and source code stored separately. Read and back up the files directly, or edit them in the workspace. Browser saves check for conflicts, and the shared service maintains document snapshots while running.
 
-源码发布不包含你的项目记录、本机配置或服务凭据。仓库提供忽略规则和提交候选检查，详见 [隐私指南](docs/privacy.md)。
+Source releases exclude your project records, local configuration, and service credentials. The repository includes ignore rules and a check for files being prepared for commit. See the [privacy guide (中文)](docs/privacy.md).
 
 <details>
-<summary><strong>使用前需要了解的边界</strong></summary>
+<summary><strong>Scope and limitations</strong></summary>
 
-- 当前面向本地 Codex / Cursor 工作流；其他工具需显式选择规则文件，不代表已经提供原生适配。入口生成与共用数据流程已验证，不能代替各 Agent 产品 UI 的独立行为验证。
-- 本项目不提供云同步、团队账号、模型 API 接入或 Agent 自动调度。私人局域网访问共用本机记录，不等于跨机器 Agent 同步。
-- 功能状态记录实际进展。选择“已上线”不会执行 Git、部署或自动核验发布。
-- 快照可浏览历史，当前不提供自动恢复、差异比较或自动清理。源码更新也不会替换已运行的后台服务，服务升级需先保存草稿再明确重启。
-- 模板导入、项目接入和重要写入有各自的预览/确认流程。支持协作记录，不等于授权创建子 Agent 或自行合并代码。
+- Currently targets local Codex / Cursor workflows. Other tools require an explicitly selected rule file; this does not imply a verified native adapter. Entry generation and shared data workflows have been tested, which does not replace independent behavior checks in each agent product's UI.
+- There is no cloud sync, team account system, model API integration, or automatic agent scheduling. Private LAN access shares the local records; it does not synchronize agents on different machines.
+- Feature status describes actual progress. Setting it to released does not execute Git operations, deploy code, or verify a release.
+- Snapshots support browsing history. Automatic restore, diffing, and cleanup are not currently provided. Updating source files does not replace a running service; save drafts before an explicit service restart.
+- Template imports, project enrollment, and important writes have their own preview and confirmation steps. Collaboration records do not authorize spawning agents or merging code.
 
 </details>
 
-## 继续探索
+## Explore further
 
-| 想了解什么 | 从这里开始 |
+English and Chinese are available for this README and the workflow guide. Other linked documents retain their existing languages, marked below where relevant.
+
+| Topic | Start here |
 | --- | --- |
-| Skill、项目规则与多工具进度如何衔接 | [工作原理与协作示例](docs/how-it-works.md) · [Skill 指令](SKILL.md) |
-| 安装、平台操作与 CLI 用法 | [完整使用手册](docs/usage.md) · [运行示例](docs/walkthrough.md) |
-| 接入与记录格式 | [初始化规范](references/initialization.md) · [记录契约](references/record-format.md) |
-| 规则复用与交接 | [开发规则模板](references/rule-templates.md) · [协作与同步](references/collaboration.md) |
-| 外部应用与服务 | [本机应用联动](references/service-control.md) |
-| 参与开发与版本维护 | [贡献指南](CONTRIBUTING.md) · [版本规范](docs/versioning.md) · [更新记录](CHANGELOG.md) |
+| Skills, project rules, and progress across tools | [How it works](docs/how-it-works.md) · [Skill instructions](SKILL.md) |
+| Installation, workspace, and CLI | [User guide (中文)](docs/usage.md) · [Walkthrough (中文)](docs/walkthrough.md) |
+| Enrollment and record structure | [Initialization](references/initialization.md) · [Record format](references/record-format.md) |
+| Reusable rules and handoffs | [Rule templates](references/rule-templates.md) · [Collaboration and synchronization](references/collaboration.md) |
+| External apps and service lifecycle | [Local app integration](references/service-control.md) |
+| Contributing and releases | [Contributing (中文)](CONTRIBUTING.md) · [Version policy (中文)](docs/versioning.md) · [Changelog (中文)](CHANGELOG.md) |
 
-欢迎通过 [Issue](https://github.com/wnagchi/biz-project/issues) 交流使用场景与可复现的问题，也欢迎提交聚焦的改进。前端开发环境、验证命令与截图要求见贡献指南。
+Share use cases and reproducible issues through [GitHub Issues](https://github.com/wnagchi/biz-project/issues), or contribute a focused improvement. The contribution guide covers frontend setup, verification commands, and screenshot requirements.
 
 ---
 
 <div align="center">
 
-**本地运行 · 文件可读 · 上下文可接续**
+**Local files · Readable records · Context you can continue**
 
-[MIT License](LICENSE) · [Lucide 许可](web/LUCIDE-LICENSE.txt) · [Marked 说明](web/vendor/README.md)
+[MIT License](LICENSE) · [Lucide license](web/LUCIDE-LICENSE.txt) · [Marked notices](web/vendor/README.md)
 
 </div>
